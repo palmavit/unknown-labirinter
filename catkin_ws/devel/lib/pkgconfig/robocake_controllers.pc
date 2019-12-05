@@ -1,0 +1,8 @@
+prefix=/home/milord/robotics/catkin_ws/devel
+
+Name: robocake_controllers
+Description: Description of robocake_controllers
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/milord/robotics/catkin_ws/devel/lib 
+Requires: 

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robocake">
+  <!--
+      HC-SR04 ultrasonic sensor.
+      See https://cdn.sparkfun.com/datasheets/Sensors/Proximity/HCSR04.pdf
+  -->
+  <xacro:macro name="ultrasonic">
+    <link name="proximity_front_link">
+      <xacro:mesh_visual name="ultrasonic"/>
+      <xacro:mesh_collision name="ultrasonic"/>
+      <xacro:mesh_inertia mass="0.02" scaling="10" volume="0.005512"
+                          x="0.002263" y="-0.000840" z="0.013641"
+                          ixx="0.000112" ixy="0"        ixz="0"
+                                         iyy="0.000017" iyz="0"
+                                                        izz="0.000111"/>
+    </link>
+
+    <joint name="proximity_front_joint" type="fixed">
+      <parent link="base_link"/>
+      <!-- <origin xyz="0.072431 0.000139 0.001164"/> -->
+      <origin xyz="0.0362155 0.0000695 0.000582"/>
+      <child link="proximity_front_link"/>
+    </joint>
+
+    <xacro:gazebo_proximity_sensor name="proximity_front"
+                                   angle="${5 / 180 * pi}"
+                                   min_range="0.02" max_range="0.8"
+                                   type="ultrasound"/>
+  </xacro:macro>
+</robot>

@@ -1,0 +1,26 @@
+material Floor
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture floor.png
+      }
+    }
+  }
+}
+material Ground
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture ground.png
+      }
+    }
+  }
+}

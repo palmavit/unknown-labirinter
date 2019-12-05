@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="mesh_visual" params="name">
+    <visual>
+      <geometry>
+        <mesh
+          filename="package://robocake_description/meshes/visual/${name}.dae"
+          scale="0.5 0.5 0.5"/>
+        <!-- <box size="0.1 0.1 0.1"/> -->
+      </geometry>
+    </visual>
+  </xacro:macro>
+
+  <xacro:macro name="mesh_collision" params="name">
+    <collision>
+      <geometry>
+        <mesh
+          filename="package://robocake_description/meshes/collision/${name}.dae"
+          scale="0.5 0.5 0.5"/>
+      </geometry>
+    </collision>
+  </xacro:macro>
+
+  <!--
+      Generates inertial tag for a mesh link based on meshlab output.
+        scaling - temporary scaling applied in meshlab to increase precision.
+        x, y, z - center of mass.
+        ixx..izz - above-diagonal elements of the inertia tensor.
+  -->
+  <xacro:macro name="mesh_inertia"
+               params="mass scaling volume
+                       x y z ixx ixy ixz iyy iyz izz">
+    <inertial>
+      <mass value="${mass}"/>
+      <origin xyz="${x / scaling} ${y / scaling} ${z / scaling}"/>
+      <xacro:property name="inertia_scaling"
+                      value="${mass / volume / scaling**2}"/>
+      <inertia
+        ixx="${ixx * inertia_scaling}" ixy="${ixy * inertia_scaling}"
+        ixz="${ixz * inertia_scaling}" iyy="${iyy * inertia_scaling}"
+        iyz="${iyz * inertia_scaling}" izz="${izz * inertia_scaling}"
+      />
+    </inertial>
+  </xacro:macro>
+
+  <!--
+      Creates a dummy link with no geometry, low mass and low inertia. Used for
+      emulating joints with multiple rotation axes. Gazebo requires mass and
+      inertial tensor to be non-zero, otherwise the link is not created in the
+      simulation at all or behaves incorrectly.
+  -->
+  <xacro:macro name="dummy_link" params="name">
+    <link name="${name}">
+      <inertial>
+        <mass value="0.001"/>
+        <inertia ixx="1e-12" ixy="0"     ixz="0"
+                             iyy="1e-12" iyz="0"
+                                         izz="1e-12"/>
+      </inertial>
+    </link>
+  </xacro:macro>
+
+  <!--
+      Gazebo doesn't seem to directly support non-laser sensors, so this is
+      implemented as a laser with multiple samples. 3 samples (left/center/right
+      for horizontal, bottom/center/top for vertical) seem to work well enough
+      for small angles.
+  -->
+  <xacro:macro name="gazebo_proximity_sensor"
+               params="name angle min_range max_range type">
+    <gazebo reference="${name}_link">
+      <sensor type="ray" name="${name}_sensor">
+        <update_rate>10</update_rate>
+        <visualize>false</visualize>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>3</samples>
+              <min_angle>${-angle / 2}</min_angle>
+              <max_angle>${angle / 2}</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>3</samples>
+              <min_angle>${-angle / 2}</min_angle>
+              <max_angle>${angle / 2}</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>${min_range}</min>
+            <max>${max_range}</max>
+          </range>
+        </ray>
+        <plugin filename="libgazebo_ros_range.so" name="gazebo_ros_range">
+          <topicName>${name}</topicName>
+          <frameName>${name}_link</frameName>
+          <fov>${angle}</fov>
+          <radiation>${type}</radiation>
+        </plugin>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+</robot>

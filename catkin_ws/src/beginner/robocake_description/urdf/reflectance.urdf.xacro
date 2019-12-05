@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robocake">
+  <!--
+      QTR-1A reflectance sensor.
+      See https://www.pololu.com/product/2458
+  -->
+  <xacro:macro name="reflectance" params="side reflect">
+    <link name="reflectance_${side}_link">
+      <xacro:mesh_visual name="reflectance"/>
+      <collision>
+        <geometry>
+          <box size="0.002 0.008 0.0145"/>
+        </geometry>
+      </collision>
+      <xacro:mesh_inertia mass="0.01" scaling="100" volume="0.201368"
+                        x="-0.024542" y="0" z="0"
+                        ixx="0.012506" ixy="0"        ixz="0"
+                                       iyy="0.034493" iyz="0"
+                                                      izz="0.045657"/>
+    </link>
+
+    <joint name="reflectance_${side}_joint" type="fixed">
+      <parent link="base_link"/>
+      <origin xyz="0
+                   ${reflect * 0}
+                   -0.0165"
+              rpy="0 ${pi / 2} 0"/>
+      <child link="reflectance_${side}_link"/>
+    </joint>
+
+    <gazebo reference="reflectance_${side}_link">
+      <sensor type="camera" name="${side}_camera">
+        <update_rate>20</update_rate> <!-- 10 times per second -->
+        <visualize>true</visualize> <!-- false -->
+        <camera name="${side}_camera">
+          <clip>
+            <near>0.001</near> <!-- 0.001 -->
+          </clip>
+          <image>
+            <width>4</width> <!-- 4 -->
+            <height>4</height> <!-- 4 -->
+            <format>R8G8B8</format> <!-- R8G8B8 -->
+          </image>
+        </camera>
+        <plugin name="reflectance_sensor"
+                filename="libreflectance_sensor_plugin.so">
+          <topicName>reflectance_${side}</topicName>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+  </xacro:macro>
+</robot>

@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robocake">
+  <!--
+      SHARP GP2Y0D805Z0F infrared sensor.
+      See https://www.pololu.com/file/0J284/GP2Y0D805Z0F.pdf
+  -->
+  <xacro:macro name="infraredRoma" params="side reflect">
+    <link name="proximity_${side}_link">
+      <xacro:mesh_visual name="infrared"/>
+      <collision>
+        <!-- <origin xyz="0.001551 -0.000007 -0.001367"/> -->
+        <origin xyz="0.0007755 -0.0000035 -0.0006835"/>
+        <geometry>
+          <!-- <box size="0.007902 0.00630 0.013642"/> -->
+          <box size="0.003951 0.00315 0.006821"/>
+        </geometry>
+      </collision>
+      <xacro:mesh_inertia mass="0.01" scaling="100" volume="0.943720"
+                        x="0.006637" y="-0.000480" z="-0.183167"
+                        ixx="0.236973" ixy="-0.000042" ixz="-0.005641"
+                                       iyy="0.270439"  iyz="-0.000115"
+                                                       izz="0.120043"/>
+    </link>
+
+    <joint name="proximity_${side}_joint" type="fixed">
+      <parent link="base_link"/>
+      <!-- <origin xyz="0.034096 ${reflect * -0.058848} 0.005497"
+              rpy="0 0 ${reflect * 5 / 3 * pi}"/> -->
+      <!-- <origin xyz="0.017048 ${reflect * -0.029424} 0.0027485"
+              rpy="0 0 ${reflect * -pi / 2}"/> new -->
+      <origin xyz="0.037 ${reflect * -0.052} 0.0027485"
+              rpy="0 0 0"/>
+      <child link="proximity_${side}_link"/>
+    </joint>
+
+    <!--
+        min_range is set due to the sensor's model being partially obscured by
+        the chassis. With min_range set to zero, the chassis would be within the
+        sensor's range.
+    -->
+    <xacro:gazebo_proximity_sensor name="proximity_${side}"
+                                   angle="${2 / 180 * pi}"
+                                   min_range="0.005941" max_range="4"
+                                   type="infrared"/>
+  </xacro:macro>
+</robot>

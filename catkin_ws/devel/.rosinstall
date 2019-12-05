@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/milord/robotics/catkin_ws/devel/setup.sh
