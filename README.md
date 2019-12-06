@@ -1,12 +1,13 @@
 Для запуска:
-1. Перейти в директорию с папкой catkin_ws;
-2. Прописать команды:
+1. Разместить папку catkin_ws в домашней директории;
+2. Перейти в директорию с папкой catkin_ws;
+3. Прописать команды:
 
-	а) catkin_make
+catkin_make
 
-	b) (если папка в домашней директории) source ~/catkin_ws/devel/setup.bash
+source ~/unknown-labirinter/catkin_ws/devel/setup.bash
 
-	c) roslaunch robocake_gazebo demo.launch
+roslaunch robocake_gazebo demo.launch
 
 
 В Gazebo открывается мир с лабиринтом, в котором (по умолчанию в центре) стоит робот.
